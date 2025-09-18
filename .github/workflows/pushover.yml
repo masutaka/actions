@@ -8,11 +8,10 @@ on:
       PUSHOVER_USER_KEY:
         required: true
 
-permissions: {}
-
 jobs:
   pushover:
     runs-on: ubuntu-latest
+    permissions: {}
     timeout-minutes: 5
     steps:
     - name: pushover-actions
