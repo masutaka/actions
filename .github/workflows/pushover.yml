@@ -8,6 +8,8 @@ on:
       PUSHOVER_USER_KEY:
         required: true
 
+permissions:
+  contents: read
 jobs:
   pushover:
     runs-on: ubuntu-latest
