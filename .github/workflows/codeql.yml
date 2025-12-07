@@ -86,10 +86,6 @@ jobs:
               - added|modified: '**/action.yaml'
             go:
               - added|modified: '**/*.go'
-            java:
-              - added|modified: '**/*.kt'
-              - added|modified: '**/*.kts'
-              - added|modified: '**/*.ktm'
             javascript:
               - added|modified: '**/*.js'
               - added|modified: '**/*.jsx'
@@ -122,11 +118,6 @@ jobs:
               - added|modified: '**/*.erb'
               - added|modified: '**/*.gemspec'
               - added|modified: '**/Gemfile'
-            swift:
-              - added|modified: '**/*.swift'
-              - added|modified: '**/*.plist'
-              - added|modified: '**/*.storyboard'
-              - added|modified: '**/*.xib'
       - name: Format filtered languages
         id: format
         uses: actions/github-script@v8
@@ -135,11 +126,9 @@ jobs:
             const outputs = {
               actions: ${{ steps.determine.outputs.actions }},
               go: ${{ steps.determine.outputs.go }},
-              java: ${{ steps.determine.outputs.java }},
               javascript: ${{ steps.determine.outputs.javascript }},
               python: ${{ steps.determine.outputs.python }},
               ruby: ${{ steps.determine.outputs.ruby }},
-              swift: ${{ steps.determine.outputs.swift }},
             };
 
             const languages = Object.keys(outputs)
