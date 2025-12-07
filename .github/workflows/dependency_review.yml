@@ -1,0 +1,46 @@
+# Derived from https://github.com/route06/actions/blob/main/.github/workflows/dependency_review.yml
+# Copyright (c) 2024 ROUTE06, Inc.
+# Licensed under the MIT License.
+
+# ## Summary
+#
+# Run Dependency Review, which is GitHub Advanced Security a feature
+
+# ## Usage
+#
+# name: Dependency Review
+#
+# on: [pull_request]
+#
+# permissions:
+#   contents: read
+#   pull-requests: write
+#
+# jobs:
+#   dependency_review:
+#     uses: route06/actions/.github/workflows/dependency_review.yml@v2
+
+# ## Reference
+#
+# https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/configuring-dependency-review
+
+name: Dependency Review
+
+on:
+  workflow_call:
+    inputs:
+      comment-summary-in-pr:
+        description: Determines if the summary is posted as a comment in the PR itself. Setting this to `always` or `on-failure` requires you to give the workflow the write permissions for pull-requests
+        default: on-failure
+        required: false
+        type: string
+
+jobs:
+  dependency_review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/dependency-review-action@v4
+        with:
+          comment-summary-in-pr: ${{ inputs.comment-summary-in-pr }}
