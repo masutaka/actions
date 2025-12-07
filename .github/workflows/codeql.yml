@@ -86,10 +86,6 @@ jobs:
               - added|modified: '**/action.yaml'
             go:
               - added|modified: '**/*.go'
-            java:
-              - added|modified: '**/*.kt'
-              - added|modified: '**/*.kts'
-              - added|modified: '**/*.ktm'
             javascript:
               - added|modified: '**/*.js'
               - added|modified: '**/*.jsx'
@@ -135,7 +131,6 @@ jobs:
             const outputs = {
               actions: ${{ steps.determine.outputs.actions }},
               go: ${{ steps.determine.outputs.go }},
-              java: ${{ steps.determine.outputs.java }},
               javascript: ${{ steps.determine.outputs.javascript }},
               python: ${{ steps.determine.outputs.python }},
               ruby: ${{ steps.determine.outputs.ruby }},
