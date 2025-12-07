@@ -55,11 +55,10 @@ jobs:
       - uses: actions/checkout@v6
       - name: Create a issue
         run: |
-          gh issue create \
-            --title "$ISSUE_TITLE" \
-            --body-file "$ISSUE_DESCRIPTION" \
-            --assignee "$ISSUE_ASSIGNEES" \
-            --label "$ISSUE_LABELS"
+          ARGS=(--title "$ISSUE_TITLE" --body-file "$ISSUE_DESCRIPTION")
+          [ -n "$ISSUE_ASSIGNEES" ] && ARGS+=(--assignee "$ISSUE_ASSIGNEES")
+          [ -n "$ISSUE_LABELS" ] && ARGS+=(--label "$ISSUE_LABELS")
+          gh issue create "${ARGS[@]}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_TITLE: ${{ inputs.title }}
