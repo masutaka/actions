@@ -56,9 +56,13 @@ jobs:
       - name: Create a issue
         run: |
           gh issue create \
-            --title '${{ inputs.title }}' \
-            --body-file '${{ inputs.description_template_path }}' \
-            --assignee '${{ inputs.assignees }}' \
-            --label '${{ inputs.labels }}'
+            --title "$ISSUE_TITLE" \
+            --body-file "$ISSUE_DESCRIPTION" \
+            --assignee "$ISSUE_ASSIGNEES" \
+            --label "$ISSUE_LABELS"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ inputs.title }}
+          ISSUE_DESCRIPTION: ${{ inputs.description_template_path }}
+          ISSUE_ASSIGNEES: ${{ inputs.assignees }}
+          ISSUE_LABELS: ${{ inputs.labels }}
