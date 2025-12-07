@@ -104,9 +104,11 @@ jobs:
               - added|modified: '**/*.hbs'
               - added|modified: '**/*.ejs'
               - added|modified: '**/*.njk'
-              - added|modified: '**/*.json'
-              - added|modified: '**/*.yaml'
-              - added|modified: '**/*.yml'
+              # TODO: YAML のみのリポジトリで JavaScript 解析が誤実行される問題の暫定対応
+              # 本来 CodeQL は JSON/YAML も JavaScript 対象とするが、一旦コメントアウト
+              # - added|modified: '**/*.json'
+              # - added|modified: '**/*.yaml'
+              # - added|modified: '**/*.yml'
               - added|modified: '**/*.raml'
               - added|modified: '**/*.xml'
               - added|modified: '**/*.ts'
