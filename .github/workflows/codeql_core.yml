@@ -35,8 +35,8 @@ jobs:
         if: ${{ inputs.language == 'java' }}
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
-          distribution: 'corretto'
+          java-version: "17"
+          distribution: "corretto"
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
