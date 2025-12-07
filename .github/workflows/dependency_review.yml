@@ -18,7 +18,7 @@
 #
 # jobs:
 #   dependency_review:
-#     uses: route06/actions/.github/workflows/dependency_review.yml@v2
+#     uses: masutaka/actions/.github/workflows/dependency_review.yml@main
 
 # ## Reference
 #

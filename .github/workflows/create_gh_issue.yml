@@ -17,7 +17,7 @@
 #
 # jobs:
 #   create_issue:
-#     uses: route06/actions/.github/workflows/create_gh_issue.yml@v2
+#     uses: masutaka/actions/.github/workflows/create_gh_issue.yml@main
 #     permissions:
 #       contents: read
 #       issues: write

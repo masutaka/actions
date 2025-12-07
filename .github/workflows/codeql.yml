@@ -34,7 +34,7 @@
 #
 # jobs:
 #   codeql:
-#     uses: route06/actions/.github/workflows/codeql.yml@v2
+#     uses: masutaka/actions/.github/workflows/codeql.yml@main
 
 # ## Usage note
 #
