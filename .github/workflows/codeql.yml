@@ -1,0 +1,159 @@
+# Derived from https://github.com/route06/actions/blob/main/.github/workflows/codeql.yml
+# Copyright (c) 2024 ROUTE06, Inc.
+# Licensed under the MIT License.
+
+# ## Summary
+#
+# 変更されたファイルの拡張子をチェックし、結果に応じた言語のCodeQLワークフローを呼び出す
+
+# ## Background
+#
+# ROUTE06では元々Code Scanningのデフォルト設定を使用していたが、
+# 運用のなかで以下のような課題が見つかるようになった。
+# ・ドキュメントのみの修正にも関わらず、すべてのプログラミング言語用のジョブが動く
+# ・解析しなくてよいディレクトリ配下の指摘が多数見つかる
+# 前述の課題を解決すべくデフォルト設定を使用せず、自前でワークフローを定義している。
+
+# ## Setup
+#
+# リポジトリの Settings > Code security から、GitHub Advanced Security を有効化してください。
+# https://github.com/{owner}/{repo}/settings/security_analysis
+
+# ## Usage
+#
+# name: Run CodeQL
+#
+# on:
+#   push:
+#
+# permissions:
+#   actions: read
+#   checks: read
+#   contents: read
+#   security-events: write
+#
+# jobs:
+#   codeql:
+#     uses: masutaka/actions/.github/workflows/codeql.yml@main
+
+# ## Usage note
+#
+# マージキューを活用しているリポジトリでは、
+# ジョブの実行ブランチが下記の命名規則に沿ったブランチになることがある
+# gh-readonly-queue/{base_branch}/pr-{pr_num}-{base_branch_hash}
+# この場合、上述のブランチはリモートには存在しないためdorny/paths-filterが失敗する場合がある
+# その際は下記のようにブランチの除外条件を追加してください
+# on:
+#   push:
+#     branches-ignore:
+#       - gh-readonly-queue/main/pr-*
+
+name: Run CodeQL
+
+on:
+  workflow_call:
+
+jobs:
+  changes:
+    name: Filter Paths
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      languages: ${{ steps.format.outputs.languages }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # GitHub Actions組み込みのpathsによるフィルタでは、そのymlで実行する複数のjobそれぞれでpathsによる分岐ができない
+      # そのため https://github.com/dorny/paths-filter を使い、フィルタのjob → 各jobの順で実行することで複数jobの分岐を実現する
+      - name: Determine languages
+        id: determine
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        with:
+          # ここで指定したkeyがoutputsに出力される
+          #
+          # 拡張子の一覧は以下を参考にしている
+          # https://codeql.github.com/docs/codeql-overview/supported-languages-and-frameworks/#languages-and-compilers
+          #
+          # JavascriptとTypeScriptの拡張子は意図的に同じキーにまとめている
+          # これはCodeQL内部で解析対象として、これらを同一に扱っていることに由来する
+          # https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning?learn=code_security_actions&learnProduct=code-security#changing-the-languages-that-are-analyzed
+          filters: |
+            actions:
+              - added|modified: '.github/workflows/*.yml'
+              - added|modified: '.github/workflows/*.yaml'
+              - added|modified: '**/action.yml'
+              - added|modified: '**/action.yaml'
+            go:
+              - added|modified: '**/*.go'
+            java:
+              - added|modified: '**/*.kt'
+              - added|modified: '**/*.kts'
+              - added|modified: '**/*.ktm'
+            javascript:
+              - added|modified: '**/*.js'
+              - added|modified: '**/*.jsx'
+              - added|modified: '**/*.mjs'
+              - added|modified: '**/*.es'
+              - added|modified: '**/*.es6'
+              - added|modified: '**/*.htm'
+              - added|modified: '**/*.html'
+              - added|modified: '**/*.xhtm'
+              - added|modified: '**/*.xhtml'
+              - added|modified: '**/*.vue'
+              - added|modified: '**/*.hbs'
+              - added|modified: '**/*.ejs'
+              - added|modified: '**/*.njk'
+              # TODO: YAML のみのリポジトリで JavaScript 解析が誤実行される問題の暫定対応
+              # 本来 CodeQL は JSON/YAML も JavaScript 対象とするが、一旦コメントアウト
+              # - added|modified: '**/*.json'
+              # - added|modified: '**/*.yaml'
+              # - added|modified: '**/*.yml'
+              - added|modified: '**/*.raml'
+              - added|modified: '**/*.xml'
+              - added|modified: '**/*.ts'
+              - added|modified: '**/*.tsx'
+              - added|modified: '**/*.mts'
+              - added|modified: '**/*.cts'
+            python:
+              - added|modified: '**/*.py'
+            ruby:
+              - added|modified: '**/*.rb'
+              - added|modified: '**/*.erb'
+              - added|modified: '**/*.gemspec'
+              - added|modified: '**/Gemfile'
+            swift:
+              - added|modified: '**/*.swift'
+              - added|modified: '**/*.plist'
+              - added|modified: '**/*.storyboard'
+              - added|modified: '**/*.xib'
+      - name: Format filtered languages
+        id: format
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outputs = {
+              actions: ${{ steps.determine.outputs.actions }},
+              go: ${{ steps.determine.outputs.go }},
+              java: ${{ steps.determine.outputs.java }},
+              javascript: ${{ steps.determine.outputs.javascript }},
+              python: ${{ steps.determine.outputs.python }},
+              ruby: ${{ steps.determine.outputs.ruby }},
+              swift: ${{ steps.determine.outputs.swift }},
+            };
+
+            const languages = Object.keys(outputs)
+              .filter(lang => outputs[lang]);
+
+            core.setOutput('languages', JSON.stringify(languages));
+
+  languages:
+    needs: changes
+    if: ${{ needs.changes.outputs.languages != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ${{ fromJson(needs.changes.outputs.languages) }}
+    uses: ./.github/workflows/codeql_core.yml
+    with:
+      language: ${{ matrix.language }}
