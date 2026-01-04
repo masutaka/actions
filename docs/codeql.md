@@ -57,7 +57,7 @@ jobs:
 
 マージキューを使用しているリポジトリでは、ジョブの実行ブランチが以下の命名規則に沿ったブランチになることがある。
 
-```
+```txt
 gh-readonly-queue/{base_branch}/pr-{pr_num}-{base_branch_hash}
 ```
 
