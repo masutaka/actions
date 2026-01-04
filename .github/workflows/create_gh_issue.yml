@@ -2,31 +2,6 @@
 # Copyright (c) 2024 ROUTE06, Inc.
 # Licensed under the MIT License.
 
-# ## Summary
-#
-# Create GitHub Issue from the given arguments.
-
-# ## Usage
-#
-# name: Create GitHub Issue
-#
-# on:
-#   schedule:
-#     # 毎週水曜 13:00 JST に実行
-#     - cron: "0 4 * * wed"
-#
-# jobs:
-#   create_issue:
-#     uses: masutaka/actions/.github/workflows/create_gh_issue.yml@main
-#     permissions:
-#       contents: read
-#       issues: write
-#     with:
-#       title: Sample Issue
-#       description_template_path: _templates/sample_issue.md
-#       assignees: alice,bob
-#       labels: bug,wontfix
-
 name: Create GitHub Issue
 
 on:
