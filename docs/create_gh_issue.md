@@ -13,7 +13,7 @@
 
 ## 使用例
 
-### 基本的な使用法
+### 基本的な使用方法
 
 ```yml
 name: Create GitHub Issue
