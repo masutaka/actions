@@ -2,15 +2,7 @@
 # Copyright (c) 2024 ROUTE06, Inc.
 # Licensed under the MIT License.
 
-# ## Summary
-#
-# The core workflow of CodeQL which called by .github/workflows/codeql.yml
-
-# ## Usage
-#
-# None.
-
-name: Run CodeQL Core
+name: CodeQL Core
 
 on:
   workflow_call:
