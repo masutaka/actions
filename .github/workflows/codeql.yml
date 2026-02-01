@@ -16,7 +16,7 @@ jobs:
       languages: ${{ steps.format.outputs.languages }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       # GitHub Actions組み込みのpathsによるフィルタでは、そのymlで実行する複数のjobそれぞれでpathsによる分岐ができない
       # そのため https://github.com/dorny/paths-filter を使い、フィルタのjob → 各jobの順で実行することで複数jobの分岐を実現する
