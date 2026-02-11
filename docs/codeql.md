@@ -25,7 +25,7 @@ Code Scanning のデフォルト設定を使用した場合、以下の課題が
 
 ## セットアップ
 
-リポジトリの Settings > Code security から、GitHub Advanced Security を有効化する。
+プライベートリポジトリでは、リポジトリの Settings > Code security から、GitHub Advanced Security を有効化する。
 
 `https://github.com/{owner}/{repo}/settings/security_analysis`
 

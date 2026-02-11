@@ -8,6 +8,12 @@
 
 [.github/workflows/codeql.yml](../.github/workflows/codeql.yml) は push/pull_request で変更されたファイルに基づいて言語を自動選択するが、スケジュール実行には対応していない。スケジュール実行を行う場合は、このワークフローを直接使用する必要がある。
 
+## セットアップ
+
+プライベートリポジトリでは、リポジトリの Settings > Code security から、GitHub Advanced Security を有効化する。
+
+`https://github.com/{owner}/{repo}/settings/security_analysis`
+
 ## Inputs
 
 | 名前 | 必須 | 設定可能な値 | 説明 |

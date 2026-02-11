@@ -4,6 +4,12 @@
 
 このワークフローは Pull Request で追加・変更された依存関係のセキュリティ脆弱性をチェックし、デフォルトブランチへの脆弱性の混入を防ぐ。
 
+## セットアップ
+
+プライベートリポジトリでは、リポジトリの Settings > Code security から、GitHub Advanced Security を有効化する。
+
+`https://github.com/{owner}/{repo}/settings/security_analysis`
+
 ## Inputs
 
 | 名前 | 必須 | デフォルト | 設定可能な値 | 説明 |
