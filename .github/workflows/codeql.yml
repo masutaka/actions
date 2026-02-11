@@ -10,7 +10,7 @@ on:
 jobs:
   changes:
     name: Filter Paths
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     outputs:
       languages: ${{ steps.format.outputs.languages }}
