@@ -13,7 +13,7 @@
 ## 使用例
 
 ```yml
-name: Setup PR
+name: Add assignee to PR
 
 on:
   pull_request:
