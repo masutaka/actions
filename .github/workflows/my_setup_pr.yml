@@ -1,0 +1,15 @@
+# Derived from https://github.com/route06/actions/blob/main/.github/workflows/my_setup_pr.yml
+# Copyright (c) 2024 ROUTE06, Inc.
+# Licensed under the MIT License.
+
+name: My Setup PR
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  add-assignee-to-pr:
+    permissions:
+      pull-requests: write
+    uses: ./.github/workflows/add_assignee_to_pr.yml
