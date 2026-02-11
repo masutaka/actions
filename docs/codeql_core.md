@@ -6,7 +6,7 @@
 
 [Code Scanning のデフォルト設定](https://docs.github.com/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning#about-default-setup)では、push/pull_request をトリガーとした実行だけでなくスケジュール実行も行われる。
 
-[codeql.yml](./codeql.md) は push/pull_request で変更されたファイルに基づいて言語を自動選択するが、スケジュール実行には対応していない。スケジュール実行を行う場合は、このワークフローを直接使用する必要がある。
+[.github/workflows/codeql.yml](../.github/workflows/codeql.yml) は push/pull_request で変更されたファイルに基づいて言語を自動選択するが、スケジュール実行には対応していない。スケジュール実行を行う場合は、このワークフローを直接使用する必要がある。
 
 ## Inputs
 
@@ -18,7 +18,7 @@
 
 ### push/pull_request トリガー
 
-変更されたファイルに応じて解析する場合は、[codeql.yml](./codeql.md) を使用すること。
+変更されたファイルに応じて解析する場合は、[.github/workflows/codeql.yml](../.github/workflows/codeql.yml) を使用すること。
 
 ### スケジュール実行
 
