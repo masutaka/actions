@@ -28,4 +28,4 @@ jobs:
 
 ## 関連
 
-- https://github.com/technote-space/assign-author
+- https://cli.github.com/manual/gh_pr_edit
