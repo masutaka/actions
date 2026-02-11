@@ -1,6 +1,6 @@
 # pushover
 
-`pushover` reusable workflow [`.github/workflows/pushover.yml`](../.github/workflows/pushover.yml) は、[Pushover API](https://pushover.net/api) を使用してスマホ通知を送信する。
+`pushover` reusable workflow [`.github/workflows/pushover.yml`](../.github/workflows/pushover.yml) は、[Pushover API](https://pushover.net/api) を使用してワークフロー失敗用の Pushover 通知を送信する。
 
 デフォルトブランチの CI が失敗した時に、すぐに気づくことを目的としたワークフロー。
 
