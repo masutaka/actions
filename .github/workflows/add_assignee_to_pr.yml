@@ -10,7 +10,7 @@ on:
 jobs:
   add-assignee-to-pr:
     name: Add assignee to PR
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 1
     permissions:
       pull-requests: write
