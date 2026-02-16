@@ -1,5 +1,11 @@
 # actions
 
+[![Test](https://github.com/masutaka/actions/actions/workflows/my_test.yml/badge.svg?branch=main)][Test]
+[![Schedule](https://github.com/masutaka/actions/actions/workflows/my_schedule.yml/badge.svg?branch=main)][Schedule]
+
+[Test]: https://github.com/masutaka/actions/actions/workflows/my_test.yml?query=branch%3Amain
+[Schedule]: https://github.com/masutaka/actions/actions/workflows/my_schedule.yml?query=branch%3Amain
+
 @masutaka が個人的に使用する、[GitHub Actions の Reusable workflows](https://docs.github.com/actions/how-tos/reuse-automations/reuse-workflows)
 
 ## Reusable workflows
