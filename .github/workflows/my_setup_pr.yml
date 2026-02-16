@@ -2,7 +2,7 @@
 # Copyright (c) 2024 ROUTE06, Inc.
 # Licensed under the MIT License.
 
-name: My Setup PR
+name: Setup PR
 
 on:
   pull_request:
