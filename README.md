@@ -19,4 +19,4 @@
 
 ## 関連
 
-- [自分用の GitHub reusable workflows リポジトリを作った | マスタカの ChangeLog メモ](https://masutaka.net/2026-02-23-1/)
+- [自分用の GitHub Actions Reusable Workflows リポジトリを作った | マスタカの ChangeLog メモ](https://masutaka.net/2026-02-23-1/)
