@@ -10,7 +10,7 @@ on:
 
 jobs:
   pushover:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions: {}
     timeout-minutes: 5
     steps:
