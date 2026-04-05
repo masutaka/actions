@@ -29,6 +29,9 @@ jobs:
   create_issue:
     runs-on: ubuntu-slim
     timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v6
       - name: Create a issue
