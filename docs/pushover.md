@@ -40,8 +40,7 @@ jobs:
     if: github.ref_name == github.event.repository.default_branch && failure()
     needs: [build, test]
     uses: masutaka/actions/.github/workflows/pushover.yml@main
-    permissions:
-      contents: read
+    permissions: {}
     secrets:
       PUSHOVER_API_KEY: ${{ secrets.PUSHOVER_API_KEY }}
       PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
