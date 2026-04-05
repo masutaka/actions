@@ -10,6 +10,7 @@
 
 ## Reusable workflows
 
+- [actionlint.yml](./.github/workflows/actionlint.yml) ([docs](./docs/actionlint.md)) - GitHub Actions のワークフローを actionlint で静的解析する
 - [add_assignee_to_pr.yml](./.github/workflows/add_assignee_to_pr.yml) ([docs](./docs/add_assignee_to_pr.md)) - PR 作成時に assignee を PR 作成者に設定する
 - [codeql.yml](./.github/workflows/codeql.yml) ([docs](./docs/codeql.md)) - 変更されたファイルから言語を検知し CodeQL 解析を実行する
 - [codeql_core.yml](./.github/workflows/codeql_core.yml) ([docs](./docs/codeql_core.md)) - 指定された言語の CodeQL 解析を実行する
