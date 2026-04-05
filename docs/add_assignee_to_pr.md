@@ -21,9 +21,9 @@ on:
 
 jobs:
   add-assignee-to-pr:
+    uses: masutaka/actions/.github/workflows/add_assignee_to_pr.yml@main
     permissions:
       pull-requests: write
-    uses: masutaka/actions/.github/workflows/add_assignee_to_pr.yml@main
 ```
 
 ## 関連

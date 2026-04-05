@@ -8,22 +8,22 @@ on:
 
 jobs:
   actionlint:
+    uses: ./.github/workflows/actionlint.yml
     permissions:
       contents: read
-    uses: ./.github/workflows/actionlint.yml
   codeql:
+    uses: ./.github/workflows/codeql.yml
     permissions:
       actions: read
       contents: read
       pull-requests: read
       security-events: write
-    uses: ./.github/workflows/codeql.yml
   pushover:
     name: pushover if failure
     if: github.ref_name == github.event.repository.default_branch && failure()
-    permissions: {}
     needs: [actionlint, codeql]
     uses: ./.github/workflows/pushover.yml
+    permissions: {}
     secrets:
       PUSHOVER_API_KEY: ${{ secrets.PUSHOVER_API_KEY }}
       PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}

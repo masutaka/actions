@@ -96,14 +96,14 @@ jobs:
   languages:
     needs: changes
     if: ${{ needs.changes.outputs.languages != '[]' }}
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
     strategy:
       fail-fast: false
       matrix:
         language: ${{ fromJson(needs.changes.outputs.languages) }}
     uses: ./.github/workflows/codeql_core.yml
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     with:
       language: ${{ matrix.language }}
