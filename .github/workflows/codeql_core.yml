@@ -16,6 +16,10 @@ jobs:
     name: Perform CodeQL for ${{ inputs.language }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout repository

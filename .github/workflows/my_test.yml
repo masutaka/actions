@@ -14,8 +14,8 @@ jobs:
   codeql:
     permissions:
       actions: read
-      checks: read
       contents: read
+      pull-requests: read
       security-events: write
     uses: ./.github/workflows/codeql.yml
   pushover:

@@ -35,49 +35,22 @@ Code Scanning のデフォルト設定を使用した場合、以下の課題が
 
 ## 使用例
 
-### 基本的な使用方法
-
 ```yml
 name: CodeQL
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   codeql:
     uses: masutaka/actions/.github/workflows/codeql.yml@main
     permissions:
       actions: read
-      checks: read
       contents: read
-      security-events: write
-```
-
-### マージキューを使用するリポジトリ
-
-マージキューを使用しているリポジトリでは、ジョブの実行ブランチが以下の命名規則に沿ったブランチになることがある。
-
-```txt
-gh-readonly-queue/{base_branch}/pr-{pr_num}-{base_branch_hash}
-```
-
-このブランチはリモートには存在しないため、codeql.yml が使用する `dorny/paths-filter` が失敗する場合がある。その際は以下のようにブランチの除外条件を追加すればよい。
-
-```yml
-name: CodeQL
-
-on:
-  push:
-    branches-ignore:
-      - gh-readonly-queue/main/pr-*
-
-jobs:
-  codeql:
-    uses: masutaka/actions/.github/workflows/codeql.yml@main
-    permissions:
-      actions: read
-      checks: read
-      contents: read
+      pull-requests: read
       security-events: write
 ```
 
@@ -86,3 +59,4 @@ jobs:
 - [Finding security vulnerabilities and errors in your code with code scanning - GitHub Docs](https://docs.github.com/code-security/code-scanning)
 - [CodeQL overview — CodeQL](https://codeql.github.com/docs/codeql-overview/)
 - https://github.com/github/codeql-action
+- https://github.com/actions/starter-workflows/blob/main/code-scanning/codeql.yml

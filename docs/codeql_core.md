@@ -42,7 +42,6 @@ jobs:
         language: [actions, ruby]
     permissions:
       actions: read
-      checks: read
       contents: read
       security-events: write
     uses: masutaka/actions/.github/workflows/codeql_core.yml@main
@@ -55,3 +54,4 @@ jobs:
 - [Finding security vulnerabilities and errors in your code with code scanning - GitHub Docs](https://docs.github.com/code-security/code-scanning)
 - [CodeQL overview — CodeQL](https://codeql.github.com/docs/codeql-overview/)
 - https://github.com/github/codeql-action
+- https://github.com/actions/starter-workflows/blob/main/code-scanning/codeql.yml
