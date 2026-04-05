@@ -57,9 +57,6 @@ name: Dependency Review
 
 on: [pull_request]
 
-permissions:
-  contents: read
-
 jobs:
   dependency_review:
     uses: masutaka/actions/.github/workflows/dependency_review.yml@main
