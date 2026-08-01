@@ -17,9 +17,16 @@ jobs:
       - uses: actions/checkout@v7
       - name: Run actionlint
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           tarball="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
           curl -fsSL -O "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${tarball}"
+          # 正規の release workflow がビルドした成果物であることを検証する
+          gh attestation verify "$tarball" \
+            --repo rhysd/actionlint \
+            --signer-workflow rhysd/actionlint/.github/workflows/release.yaml
+          # ピンした時点から中身が変わっていないことを検証する
           echo "${ACTIONLINT_CHECKSUM}  ${tarball}" | sha256sum -c -
           tar -xzf "$tarball" actionlint
           ./actionlint -color
