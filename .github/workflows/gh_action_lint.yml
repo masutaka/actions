@@ -1,0 +1,62 @@
+name: gh_action_lint
+
+on:
+  workflow_call:
+
+env:
+  ACTIONLINT_VERSION: 1.7.12
+  ACTIONLINT_CHECKSUM: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+  GHALINT_VERSION: 1.5.6
+  GHALINT_CHECKSUM: 98ee0e3330de7286f470d1e89c03ff7ce70d7a5998ba0f15969c400447be579c
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run actionlint
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tarball="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL -O "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${tarball}"
+          # 正規の release workflow がビルドした成果物であることを検証する
+          gh attestation verify "$tarball" \
+            --repo rhysd/actionlint \
+            --signer-workflow rhysd/actionlint/.github/workflows/release.yaml
+          # ピンした時点から中身が変わっていないことを検証する
+          echo "${ACTIONLINT_CHECKSUM}  ${tarball}" | sha256sum -c -
+          tar -xzf "$tarball" actionlint
+          ./actionlint -color
+
+  ghalint:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run ghalint
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tarball="ghalint_${GHALINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL -O "https://github.com/suzuki-shunsuke/ghalint/releases/download/v${GHALINT_VERSION}/${tarball}"
+          # 正規の release workflow がビルドした成果物であることを検証する
+          # 署名は ghalint の release.yaml から呼ばれる reusable workflow で行われるため、そちらを signer に指定する
+          gh attestation verify "$tarball" \
+            --repo suzuki-shunsuke/ghalint \
+            --signer-workflow suzuki-shunsuke/go-release-workflow/.github/workflows/release.yaml
+          # ピンした時点から中身が変わっていないことを検証する
+          echo "${GHALINT_CHECKSUM}  ${tarball}" | sha256sum -c -
+          tar -xzf "$tarball" ghalint
+          ./ghalint run
