@@ -26,10 +26,6 @@ jobs:
       contents: read
 ```
 
-## バージョンの更新
-
-ghalint のリリースには `v1.5.7-0` のようなプレリリース版が含まれる。prerelease でないタグを選ぶこと。
-
 ## 関連
 
 - https://github.com/suzuki-shunsuke/ghalint
