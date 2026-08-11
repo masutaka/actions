@@ -2,7 +2,7 @@
 
 `actionlint` reusable workflow [`.github/workflows/actionlint.yml`](../.github/workflows/actionlint.yml) は、GitHub Actions のワークフローファイルを [actionlint](https://github.com/rhysd/actionlint) で静的解析する。
 
-actionlint のバイナリ実行ファイルを GitHub Releases から取得し、SHA-256 チェックサムで検証した上で実行する。バージョンとチェックサムはワークフロー最上位の `env` で指定されており、更新時は `.github/workflows/actionlint.yml` の当該値を書き換える。
+セキュリティポリシーへの準拠を検査する [ghalint](./ghalint.md) とは異なり、構文や式、`run` のシェルスクリプトの誤りを検出する。
 
 ## Inputs
 
