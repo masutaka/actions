@@ -26,21 +26,9 @@ jobs:
       contents: read
 ```
 
-## 付録
-
-### バージョンの更新
+## バージョンの更新
 
 ghalint のリリースには `v1.5.7-0` のようなプレリリース版が含まれる。prerelease でないタグを選ぶこと。
-
-### attestation を検証しない理由
-
-[`actionlint.yml`](../.github/workflows/actionlint.yml) と違い `gh attestation verify` は行わない。ghalint の attestation は gh v2.97.0 では検証できないため。
-
-```console
-$ gh attestation verify ghalint_1.5.6_linux_amd64.tar.gz --repo suzuki-shunsuke/ghalint
-
-Error: verifying with issuer "sigstore.dev"
-```
 
 ## 関連
 
