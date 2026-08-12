@@ -22,4 +22,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-assignee ${{ github.event.pull_request.user.login }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-assignee "$PR_AUTHOR"
