@@ -64,3 +64,5 @@ jobs:
           tar -xzf "$tarball" ghalint
       - name: Run ghalint
         run: ./ghalint run
+      - name: Run ghalint run-action
+        run: ./ghalint run-action
