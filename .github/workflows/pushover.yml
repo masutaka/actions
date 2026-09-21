@@ -2,6 +2,23 @@ name: Pushover
 
 on:
   workflow_call:
+    inputs:
+      status:
+        description: "ジョブの結果。success を渡すと成功通知になる"
+        type: string
+        default: "failure"
+      title:
+        description: "通知のタイトル。空なら Failed <repository>'s workflow (<workflow>)"
+        type: string
+        default: ""
+      priority:
+        description: "通知の優先度 (-2 〜 1)"
+        type: number
+        default: 1 # High
+      sound:
+        description: "通知音"
+        type: string
+        default: "falling"
     secrets:
       PUSHOVER_API_KEY:
         required: true
@@ -21,8 +38,8 @@ jobs:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_API_KEY }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER_KEY }}
         with:
-          status: "failure"
-          title: "Failed ${{ github.repository }}'s workflow (${{ github.workflow }})"
+          status: ${{ inputs.status }}
+          title: ${{ inputs.title != '' && inputs.title || format('Failed {0}''s workflow ({1})', github.repository, github.workflow) }}
           url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          priority: 1 # High
-          sound: "falling"
+          priority: ${{ inputs.priority }}
+          sound: ${{ inputs.sound }}
