@@ -74,7 +74,17 @@ jobs:
       PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
 ```
 
+## 通知内容
+
+タイトルは `title` input（省略時は `Failed <repository>'s workflow (<workflow>)`）、URL は通知を送ったワークフロー実行へのリンクになる。本文は以下の 4 行。
+
+```
+Repo: masutaka/actions
+Commit: 8e2b830a
+Ref: refs/heads/main
+Status: failure
+```
+
 ## 関連
 
 - https://pushover.net/
-- https://github.com/umahmood/pushover-actions
