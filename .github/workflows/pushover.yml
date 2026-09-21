@@ -27,19 +27,32 @@ on:
 
 jobs:
   pushover:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions: {}
     timeout-minutes: 5
     steps:
-      - name: pushover-actions
-        # v1.2.0 のリリース待ち: https://github.com/umahmood/pushover-actions/issues/7
-        uses: umahmood/pushover-actions@0582cb24dccd1fe77aeb35e6fb8027ddbca8af35 # main
+      - name: Send a Pushover notification
         env:
-          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_API_KEY }}
-          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER_KEY }}
-        with:
-          status: ${{ inputs.status }}
-          title: ${{ inputs.title != '' && inputs.title || format('Failed {0}''s workflow ({1})', github.repository, github.workflow) }}
-          url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          priority: ${{ inputs.priority }}
-          sound: ${{ inputs.sound }}
+          PUSHOVER_API_KEY: ${{ secrets.PUSHOVER_API_KEY }}
+          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+          STATUS: ${{ inputs.status }}
+          TITLE: ${{ inputs.title != '' && inputs.title || format('Failed {0}''s workflow ({1})', github.repository, github.workflow) }}
+          URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          PRIORITY: ${{ inputs.priority }}
+          SOUND: ${{ inputs.sound }}
+        # --retry の対象は 408/429/5xx とタイムアウト・接続エラーのみ。
+        # パラメータ不正などの 4xx は --fail-with-body でそのまま失敗させる
+        run: |
+          message=$(printf 'Repo: %s\nCommit: %s\nRef: %s\nStatus: %s' \
+            "$GITHUB_REPOSITORY" "${GITHUB_SHA:0:8}" "$GITHUB_REF" "$STATUS")
+          curl -sS --fail-with-body \
+            --max-time 30 --retry 3 --retry-delay 5 --retry-connrefused \
+            --data-urlencode "token=$PUSHOVER_API_KEY" \
+            --data-urlencode "user=$PUSHOVER_USER_KEY" \
+            --data-urlencode "message=$message" \
+            --data-urlencode "title=$TITLE" \
+            --data-urlencode "url=$URL" \
+            --data-urlencode "priority=$PRIORITY" \
+            --data-urlencode "sound=$SOUND" \
+            https://api.pushover.net/1/messages.json
+          echo
