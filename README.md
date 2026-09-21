@@ -16,7 +16,7 @@
 - [create_gh_issue.yml](./.github/workflows/create_gh_issue.yml) ([docs](./docs/create_gh_issue.md)) - テンプレートから GitHub Issue を作成する
 - [dependency_review.yml](./.github/workflows/dependency_review.yml) ([docs](./docs/dependency_review.md)) - PR の依存関係をレビューする
 - [gh_action_lint.yml](./.github/workflows/gh_action_lint.yml) ([docs](./docs/gh_action_lint.md)) - GitHub Actions のワークフローを actionlint, ghalint, zizmor で検査する
-- [pushover.yml](./.github/workflows/pushover.yml) ([docs](./docs/pushover.md)) - ワークフロー失敗用の Pushover 通知を送信する
+- [pushover.yml](./.github/workflows/pushover.yml) ([docs](./docs/pushover.md)) - Pushover 通知を送信する
 
 ## 関連
 
