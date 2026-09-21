@@ -9,8 +9,8 @@
 | `title` | Yes | - | 作成する Issue のタイトル。`date_format` 指定時は `{{date}}` が日付に置換される |
 | `date_format` | No | なし | `title` 内の `{{date}}` を置換する `date` コマンドのフォーマット（例: `+%Y年%m月`） |
 | `description_template_path` | Yes | - | Issue の説明に利用するテンプレートファイルのパス |
-| `assignees` | No | なし | Issue の Assignees（カンマ区切り） |
-| `labels` | No | なし | Issue の Labels（カンマ区切り） |
+| `assignees` | No | なし | Issue の Assignees（カンマ区切り。例: `alice,bob`） |
+| `labels` | No | なし | Issue の Labels（カンマ区切り。例: `bug,wontfix`） |
 
 ## 使用例
 

@@ -6,14 +6,14 @@
 
 ## Inputs
 
-いずれも省略可能で、省略時は失敗通知になる。
+すべて省略でき、その場合は失敗通知になる。
 
-| 名前 | デフォルト | 説明 |
-| --- | --- | --- |
-| `status` | `failure` | ジョブの結果。`success` を渡すと成功通知になる |
-| `title` | （空） | 通知のタイトル。空なら `Failed <repository>'s workflow (<workflow>)` |
-| `priority` | `1` | 通知の[優先度](https://pushover.net/api#priority)（-2 〜 1） |
-| `sound` | `falling` | [通知音](https://pushover.net/api#sounds) |
+| 名前 | 必須 | デフォルト | 設定可能な値 | 説明 |
+| --- | --- | --- | --- | --- |
+| `status` | No | `failure` | `success`, `failure` | ジョブの結果。`success` を渡すと成功通知になる |
+| `title` | No | `Failed <repository>'s workflow (<workflow>)` | 任意の文字列 | 通知のタイトル |
+| `priority` | No | `1`（High Priority） | [API Docs > Message Priority](https://pushover.net/api#priority) 参照 | 通知の優先度 |
+| `sound` | No | `falling` | [API Docs > Notification Sounds](https://pushover.net/api#sounds) 参照 | 通知音 |
 
 ## Secrets
 

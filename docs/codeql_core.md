@@ -16,9 +16,9 @@
 
 ## Inputs
 
-| 名前 | 必須 | 設定可能な値 | 説明 |
-| --- | --- | --- | --- |
-| `language` | Yes | `actions`, `go`, `javascript`, `python`, `ruby` | 解析対象のプログラミング言語 |
+| 名前 | 必須 | デフォルト | 設定可能な値 | 説明 |
+| --- | --- | --- | --- | --- |
+| `language` | Yes | - | `actions`, `go`, `javascript`, `python`, `ruby` | 解析対象のプログラミング言語 |
 
 ## 使用例
 
