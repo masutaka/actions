@@ -37,7 +37,8 @@ jobs:
           echo "${ACTIONLINT_CHECKSUM}  ${tarball}" | sha256sum -c -
           tar -xzf "$tarball" actionlint
       - name: Run actionlint
-        run: ./actionlint -color
+        # actionlint v1.7.12 は concurrency の queue に未対応のため、そのエラーだけ無視する
+        run: ./actionlint -color -ignore 'unexpected key "queue" for "concurrency" section'
 
   ghalint:
     runs-on: ubuntu-slim
