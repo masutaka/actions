@@ -18,6 +18,10 @@ linter ごとにジョブを分けてあるので、1 つが失敗しても残�
 
 ghalint だけはコマンドが分かれていて、`ghalint run` がワークフローを、`ghalint run-action` が action 定義を検査する。後者はリポジトリルート直下だけでなく、`.github/actions/foo/action.yml` のようにサブディレクトリへ切り出した composite action も対象になる。
 
+### actionlint で無視しているエラー
+
+`concurrency` の `queue` キーに actionlint v1.7.12 が対応していないため、`unexpected key "queue" for "concurrency" section` を無視している。actionlint が対応したら外す。
+
 ### ghalint と zizmor を併用している理由
 
 zizmor は ghalint のポリシーをほぼ包含する。それでも両方を動かしているのは、`job_timeout_minutes_is_required` と `action_shell_is_required` が ghalint にしかないため。SHA pin のように、両方から同じ指摘が出るものもある。
