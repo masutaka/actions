@@ -4,9 +4,12 @@ on:
   workflow_call:
 
 env:
-  ACTIONLINT_VERSION: 1.7.12
+  # VERSION は v 付きのタグ名にする。Renovate がタグ名で CHECKSUM を引くため
+  # renovate: depName=rhysd/actionlint
+  ACTIONLINT_VERSION: v1.7.12
   ACTIONLINT_CHECKSUM: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
-  GHALINT_VERSION: 1.5.6
+  # renovate: depName=suzuki-shunsuke/ghalint
+  GHALINT_VERSION: v1.5.6
   GHALINT_CHECKSUM: 98ee0e3330de7286f470d1e89c03ff7ce70d7a5998ba0f15969c400447be579c
 
 defaults:
@@ -27,8 +30,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tarball="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
-          curl -fsSL -O "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${tarball}"
+          tarball="actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz"
+          curl -fsSL -O "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/${tarball}"
           # 正規の release workflow がビルドした成果物であることを検証する
           gh attestation verify "$tarball" \
             --repo rhysd/actionlint \
@@ -53,8 +56,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tarball="ghalint_${GHALINT_VERSION}_linux_amd64.tar.gz"
-          curl -fsSL -O "https://github.com/suzuki-shunsuke/ghalint/releases/download/v${GHALINT_VERSION}/${tarball}"
+          tarball="ghalint_${GHALINT_VERSION#v}_linux_amd64.tar.gz"
+          curl -fsSL -O "https://github.com/suzuki-shunsuke/ghalint/releases/download/${GHALINT_VERSION}/${tarball}"
           # 正規の release workflow がビルドした成果物であることを検証する
           # 署名は ghalint の release.yaml から呼ばれる reusable workflow で行われるため、そちらを signer に指定する
           gh attestation verify "$tarball" \
