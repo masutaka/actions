@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Asia/Tokyo",
+  "schedule": ["* * 1 * *"],
+  "minimumReleaseAge": "7 days",
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "packageRules": [
+    {
+      "groupName": "codeql-action",
+      "matchPackageNames": ["github/codeql-action{/,}**"]
+    }
+  ]
+}
