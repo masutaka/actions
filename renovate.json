@@ -6,12 +6,6 @@
   "minimumReleaseAge": "7 days",
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
-  "packageRules": [
-    {
-      "groupName": "codeql-action",
-      "matchPackageNames": ["github/codeql-action{/,}**"]
-    }
-  ],
   "customManagers": [
     {
       "description": "GitHub Release から取得するバイナリの VERSION と CHECKSUM を同時に更新する",
