@@ -7,6 +7,13 @@
   "minimumReleaseAge": "7 days",
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions", "custom.regex"],
+      "addLabels": ["github_actions"]
+    }
+  ],
   "customManagers": [
     {
       "description": "GitHub Release から取得するバイナリの VERSION と CHECKSUM を同時に更新する",
