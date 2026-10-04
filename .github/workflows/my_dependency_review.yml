@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   dependency_review:
-    uses: ./.github/workflows/dependency_review.yml
+    uses: $/.github/workflows/dependency_review.yml
     permissions:
       contents: read
       pull-requests: write

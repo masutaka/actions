@@ -40,8 +40,13 @@ jobs:
           echo "${ACTIONLINT_CHECKSUM}  ${tarball}" | sha256sum -c -
           tar -xzf "$tarball" actionlint
       - name: Run actionlint
-        # actionlint v1.7.12 は concurrency の queue に未対応のため、そのエラーだけ無視する
-        run: ./actionlint -color -ignore 'unexpected key "queue" for "concurrency" section'
+        # actionlint v1.7.12 は以下に未対応のため、そのエラーだけ無視する
+        # - concurrency の queue
+        # - self-repository 構文 ($/...) の reusable workflow 呼び出し https://github.com/rhysd/actionlint/issues/711
+        run: |
+          ./actionlint -color \
+            -ignore 'unexpected key "queue" for "concurrency" section' \
+            -ignore 'reusable workflow call "\$/'
 
   ghalint:
     runs-on: ubuntu-slim
