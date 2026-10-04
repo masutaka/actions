@@ -85,7 +85,7 @@ jobs:
       fail-fast: false
       matrix:
         language: ${{ fromJson(needs.changes.outputs.languages) }}
-    uses: ./.github/workflows/codeql_core.yml
+    uses: $/.github/workflows/codeql_core.yml
     permissions:
       actions: read
       contents: read

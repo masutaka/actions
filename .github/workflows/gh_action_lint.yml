@@ -40,8 +40,13 @@ jobs:
           echo "${ACTIONLINT_CHECKSUM}  ${tarball}" | sha256sum -c -
           tar -xzf "$tarball" actionlint
       - name: Run actionlint
-        # actionlint v1.7.12 は concurrency の queue に未対応のため、そのエラーだけ無視する
-        run: ./actionlint -color -ignore 'unexpected key "queue" for "concurrency" section'
+        # actionlint v1.7.12 は以下に未対応のため、そのエラーだけ無視する
+        # - concurrency の queue
+        # - self-repository 構文 ($/...) の reusable workflow 呼び出し https://github.com/rhysd/actionlint/issues/711
+        run: |
+          ./actionlint -color \
+            -ignore 'unexpected key "queue" for "concurrency" section' \
+            -ignore 'reusable workflow call "\$/'
 
   ghalint:
     runs-on: ubuntu-slim
@@ -81,7 +86,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Run zizmor
-        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
         with:
           advanced-security: false # true にすると SARIF 出力になり、findings があっても exit 0 で CI が落ちないため
           annotations: true

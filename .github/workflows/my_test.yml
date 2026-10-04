@@ -8,11 +8,11 @@ on:
 
 jobs:
   gh_action_lint:
-    uses: ./.github/workflows/gh_action_lint.yml
+    uses: $/.github/workflows/gh_action_lint.yml
     permissions:
       contents: read
   codeql:
-    uses: ./.github/workflows/codeql.yml
+    uses: $/.github/workflows/codeql.yml
     permissions:
       actions: read
       contents: read
@@ -22,7 +22,7 @@ jobs:
     name: pushover if failure
     if: github.ref_name == github.event.repository.default_branch && failure()
     needs: [gh_action_lint, codeql]
-    uses: ./.github/workflows/pushover.yml
+    uses: $/.github/workflows/pushover.yml
     permissions: {}
     secrets:
       PUSHOVER_API_KEY: ${{ secrets.PUSHOVER_API_KEY }}

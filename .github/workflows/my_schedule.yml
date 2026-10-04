@@ -6,7 +6,7 @@ on:
 
 jobs:
   codeql:
-    uses: ./.github/workflows/codeql_core.yml
+    uses: $/.github/workflows/codeql_core.yml
     permissions:
       actions: read
       contents: read
@@ -17,7 +17,7 @@ jobs:
     name: pushover if failure
     if: github.ref_name == github.event.repository.default_branch && failure()
     needs: codeql
-    uses: ./.github/workflows/pushover.yml
+    uses: $/.github/workflows/pushover.yml
     permissions: {}
     secrets:
       PUSHOVER_API_KEY: ${{ secrets.PUSHOVER_API_KEY }}
