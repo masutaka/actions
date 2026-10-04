@@ -22,6 +22,15 @@ ghalint だけはコマンドが分かれていて、`ghalint run` がワーク�
 
 `concurrency` の `queue` キーに actionlint v1.7.12 が対応していないため、`unexpected key "queue" for "concurrency" section` を無視している。actionlint が対応したら外す。
 
+### ghalint と zizmor の設定
+
+呼び出し側は `masutaka/actions` の reusable workflow を `@main` で呼ぶ想定なので、SHA pin を求める指摘を両 linter で無効にしている。
+
+- ghalint: `action_ref_should_be_full_length_commit_sha` から `masutaka/actions/.github/workflows/*.yml` を除外
+- zizmor: `unpinned-uses` で `masutaka/actions/*` を `ref-pin` にする
+
+設定ファイルはジョブ内で生成して linter に渡すので、呼び出し側に `.github/ghalint.yml` や `.github/zizmor.yml` を置く必要はない。置いても読まれない。
+
 ### ghalint と zizmor を併用している理由
 
 zizmor は ghalint のポリシーをほぼ包含する。それでも両方を動かしているのは、`job_timeout_minutes_is_required` と `action_shell_is_required` が ghalint にしかないため。SHA pin のように、両方から同じ指摘が出るものもある。

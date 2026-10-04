@@ -72,9 +72,21 @@ jobs:
           # ピンした時点から中身が変わっていないことを検証する
           echo "${GHALINT_CHECKSUM}  ${tarball}" | sha256sum -c -
           tar -xzf "$tarball" ghalint
+      # 呼び出し側に設定ファイルを置かずに済むよう、ここで生成する
+      - name: Generate ghalint config
+        run: |
+          cat > "$RUNNER_TEMP/ghalint.yml" <<'EOF'
+          excludes:
+            - policy_name: action_ref_should_be_full_length_commit_sha
+              action_name: masutaka/actions/.github/workflows/*.yml
+          EOF
       - name: Run ghalint
+        env:
+          GHALINT_CONFIG: ${{ runner.temp }}/ghalint.yml
         run: ./ghalint run
       - name: Run ghalint run-action
+        env:
+          GHALINT_CONFIG: ${{ runner.temp }}/ghalint.yml
         run: ./ghalint run-action
 
   zizmor:
@@ -86,8 +98,20 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # 呼び出し側に設定ファイルを置かずに済むよう、ここで生成する
+      # zizmor-action は GITHUB_WORKSPACE だけを Docker にマウントするため、RUNNER_TEMP ではなくワークスペース内に置く
+      - name: Generate zizmor config
+        run: |
+          cat > .masutaka-actions-zizmor.yml <<'EOF'
+          rules:
+            unpinned-uses:
+              config:
+                policies:
+                  masutaka/actions/*: ref-pin
+          EOF
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
         with:
           advanced-security: false # true にすると SARIF 出力になり、findings があっても exit 0 で CI が落ちないため
           annotations: true
+          config: .masutaka-actions-zizmor.yml
