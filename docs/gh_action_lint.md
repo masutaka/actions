@@ -20,7 +20,15 @@ ghalint だけはコマンドが分かれていて、`ghalint run` がワーク�
 
 ### actionlint で無視しているエラー
 
-`concurrency` の `queue` キーに actionlint v1.7.12 が対応していないため、`unexpected key "queue" for "concurrency" section` を無視している。actionlint が対応したら外す。
+actionlint v1.7.12 が未対応の構文について、以下のエラーを無視している。actionlint が対応したら外す。
+
+| 未対応の構文 | 無視しているエラー |
+| --- | --- |
+| `concurrency` の `queue` キー | `unexpected key "queue" for "concurrency" section` |
+| self-repository 構文 (`$/...`) の action | `specifying action "$/...` |
+| self-repository 構文 (`$/...`) の reusable workflow 呼び出し | `reusable workflow call "$/...` |
+
+self-repository 構文への対応は [rhysd/actionlint#711](https://github.com/rhysd/actionlint/issues/711) で追跡できる。
 
 ### ghalint と zizmor の設定
 
