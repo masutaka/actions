@@ -141,7 +141,9 @@ jobs:
                 masutaka/actions: ref-pin
           EOF
       - name: Run jactionlint
-        run: ./jactionlint --color --config-file "$RUNNER_TEMP/jactionlint.yml"
+        env:
+          GITHUB_TOKEN: ${{ github.token }} # --online で使う
+        run: ./jactionlint --color --online --config-file "$RUNNER_TEMP/jactionlint.yml"
 
   zizmor:
     runs-on: ubuntu-latest
