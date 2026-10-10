@@ -51,9 +51,9 @@ jactionlint は actionlint の fork で、zizmor の検査の多くもカバー�
 
 zizmor は ghalint のポリシーをほぼ包含する。それでも両方を動かしているのは、`job_timeout_minutes_is_required` と `action_shell_is_required` が ghalint にしかないため。SHA pin のように、両方から同じ指摘が出るものもある。
 
-### zizmor に GITHUB_TOKEN を渡している理由
+### zizmor に渡している GITHUB_TOKEN
 
-`known-vulnerable-actions` のように GitHub API を叩くオンライン検査があるため。特別な権限は不要で、主に rate limit 回避の認証に使われる。
+zizmor-action は `token` input の既定値として GITHUB_TOKEN を zizmor に渡す。`known-vulnerable-actions` のように GitHub API を叩くチェックがあるため。特別な権限は不要で、主に rate limit 回避の認証に使われる。
 
 ## Inputs
 
