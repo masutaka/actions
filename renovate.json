@@ -20,7 +20,7 @@
       "customType": "regex",
       "managerFilePatterns": ["/^\\.github/workflows/[^/]+\\.ya?ml$/"],
       "matchStrings": [
-        "# renovate: depName=(?<depName>\\S+)\\s+\\w+_VERSION: (?<currentValue>\\S+)\\s+\\w+_CHECKSUM: (?<currentDigest>[0-9a-f]{64})"
+        "# renovate: depName=(?<depName>\\S+)\\s+TAG: (?<currentValue>\\S+)\\s+ASSET_SHA256: (?<currentDigest>[0-9a-f]{64})"
       ],
       "datasourceTemplate": "github-release-attachments"
     }

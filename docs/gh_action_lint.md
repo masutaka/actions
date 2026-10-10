@@ -1,6 +1,6 @@
 # gh_action_lint
 
-`gh_action_lint` reusable workflow [`.github/workflows/gh_action_lint.yml`](../.github/workflows/gh_action_lint.yml) は、GitHub Actions まわりの設定ファイルを 3 つの linter で検査する。
+`gh_action_lint` reusable workflow [`.github/workflows/gh_action_lint.yml`](../.github/workflows/gh_action_lint.yml) は、GitHub Actions まわりの設定ファイルを 4 つの linter で検査する。
 
 linter ごとにジョブを分けてあるので、1 つが失敗しても残りの結果は得られる。
 
@@ -10,6 +10,7 @@ linter ごとにジョブを分けてあるので、1 つが失敗しても残�
 | --- | --- | --- |
 | [actionlint](https://github.com/rhysd/actionlint) | 構文や式、`run` のシェルスクリプトの誤り | ワークフロー |
 | [ghalint](https://github.com/suzuki-shunsuke/ghalint) | `permissions` や secret の扱いといったセキュリティポリシーへの準拠 | ワークフロー、action 定義 |
+| [jactionlint](https://github.com/jdx/jactionlint) | actionlint の検査に加え、zizmor 相当のセキュリティ・ポリシー検査 | ワークフロー、action 定義、Dependabot 設定 |
 | [zizmor](https://github.com/zizmorcore/zizmor) | テンプレート展開によるコード注入や pin の不備 | ワークフロー、action 定義、Dependabot 設定、pre-commit 設定 |
 
 検査対象のファイルはそれぞれ、ワークフローが `.github/workflows/*.{yml,yaml}`、action 定義が `action.{yml,yaml}`、Dependabot 設定が `.github/dependabot.yml`、pre-commit 設定が `.pre-commit-config.yaml` を指す。
@@ -30,22 +31,32 @@ actionlint v1.7.12 が未対応の構文について、以下のエラーを無�
 
 self-repository 構文への対応は [rhysd/actionlint#711](https://github.com/rhysd/actionlint/issues/711) で追跡できる。
 
-### ghalint と zizmor の設定
+### ghalint、jactionlint、zizmor の設定
 
-呼び出し側は `masutaka/actions` の reusable workflow を `@main` で呼ぶ想定なので、SHA pin を求める指摘を両 linter で無効にしている。
+呼び出し側は `masutaka/actions` の reusable workflow を `@main` で呼ぶ想定なので、SHA pin を求める指摘を各 linter で無効にしている。
 
 - ghalint: `action_ref_should_be_full_length_commit_sha` から `masutaka/actions/.github/workflows/*.yml` を除外
+- jactionlint: `unpinned-uses` で `masutaka/actions` を `ref-pin` にする
 - zizmor: `unpinned-uses` で `masutaka/actions/*` を `ref-pin` にする
 
-設定ファイルはジョブ内で生成して linter に渡すので、呼び出し側に `.github/ghalint.yml` や `.github/zizmor.yml` を置く必要はない。置いても読まれない。
+jactionlint はさらに `concurrency-limits` を off にしている。トップレベルに `concurrency:` が無いワークフローを指摘するルールで、zizmor の default でも出ない指摘のため。
+
+設定ファイルはジョブ内で生成して linter に渡すので、呼び出し側に `.github/ghalint.yml`、`.github/jactionlint.yaml`、`.github/zizmor.yml` を置く必要はない。置いても読まれない。
+
+### jactionlint を追加した理由
+
+jactionlint は actionlint の fork で、zizmor の検査の多くもカバーする。将来は actionlint と zizmor を置き換える予定で、それまでは併用して様子を見る。
 
 ### ghalint と zizmor を併用している理由
 
 zizmor は ghalint のポリシーをほぼ包含する。それでも両方を動かしているのは、`job_timeout_minutes_is_required` と `action_shell_is_required` が ghalint にしかないため。SHA pin のように、両方から同じ指摘が出るものもある。
 
-### zizmor に GITHUB_TOKEN を渡している理由
+### zizmor と jactionlint に渡している GITHUB_TOKEN
 
-`known-vulnerable-actions` のように GitHub API を叩くオンライン検査があるため。特別な権限は不要で、主に rate limit 回避の認証に使われる。
+`known-vulnerable-actions` のように GitHub API を叩くチェックがあるため。特別な権限は不要で、主に rate limit 回避の認証に使われる。
+
+- zizmor: zizmor-action が `token` input の既定値として GITHUB_TOKEN を渡す
+- jactionlint: `--online` を付けたときだけ API を叩くので、実行 step の env で GITHUB_TOKEN を渡している
 
 ## Inputs
 
@@ -73,5 +84,6 @@ jobs:
 
 - https://github.com/rhysd/actionlint
 - https://github.com/suzuki-shunsuke/ghalint
+- https://github.com/jdx/jactionlint
 - https://github.com/zizmorcore/zizmor
 - https://github.com/zizmorcore/zizmor-action

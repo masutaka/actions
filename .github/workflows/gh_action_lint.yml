@@ -3,15 +3,6 @@ name: gh_action_lint
 on:
   workflow_call:
 
-env:
-  # VERSION は v 付きのタグ名にする。Renovate がタグ名で CHECKSUM を引くため
-  # renovate: depName=rhysd/actionlint
-  ACTIONLINT_VERSION: v1.7.12
-  ACTIONLINT_CHECKSUM: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
-  # renovate: depName=suzuki-shunsuke/ghalint
-  GHALINT_VERSION: v1.5.6
-  GHALINT_CHECKSUM: 98ee0e3330de7286f470d1e89c03ff7ce70d7a5998ba0f15969c400447be579c
-
 defaults:
   run:
     shell: bash
@@ -29,16 +20,25 @@ jobs:
       - name: Install actionlint
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: rhysd/actionlint
+          ASSET: "*_linux_amd64.tar.gz"
+          # renovate: depName=rhysd/actionlint
+          TAG: v1.7.12
+          ASSET_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+          SIGNER_WORKFLOW: rhysd/actionlint/.github/workflows/release.yaml
+          EXECUTABLE: actionlint
         run: |
-          tarball="actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz"
-          curl -fsSL -O "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/${tarball}"
+          gh release download "$TAG" \
+            --repo "$REPO" \
+            --pattern "$ASSET" \
+            --output asset.tar.gz
           # 正規の release workflow がビルドした成果物であることを検証する
-          gh attestation verify "$tarball" \
-            --repo rhysd/actionlint \
-            --signer-workflow rhysd/actionlint/.github/workflows/release.yaml
+          gh attestation verify asset.tar.gz \
+            --repo "$REPO" \
+            --signer-workflow "$SIGNER_WORKFLOW"
           # ピンした時点から中身が変わっていないことを検証する
-          echo "${ACTIONLINT_CHECKSUM}  ${tarball}" | sha256sum -c -
-          tar -xzf "$tarball" actionlint
+          echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
+          tar -xzf asset.tar.gz "$EXECUTABLE"
       - name: Run actionlint
         # actionlint v1.7.12 は以下に未対応のため、そのエラーだけ無視する
         # - concurrency の queue
@@ -61,17 +61,26 @@ jobs:
       - name: Install ghalint
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: suzuki-shunsuke/ghalint
+          ASSET: "*_linux_amd64.tar.gz"
+          # renovate: depName=suzuki-shunsuke/ghalint
+          TAG: v1.5.6
+          ASSET_SHA256: 98ee0e3330de7286f470d1e89c03ff7ce70d7a5998ba0f15969c400447be579c
+          # 署名は ghalint の release.yaml から呼ばれる reusable workflow で行われるため、そちらを指定する
+          SIGNER_WORKFLOW: suzuki-shunsuke/go-release-workflow/.github/workflows/release.yaml
+          EXECUTABLE: ghalint
         run: |
-          tarball="ghalint_${GHALINT_VERSION#v}_linux_amd64.tar.gz"
-          curl -fsSL -O "https://github.com/suzuki-shunsuke/ghalint/releases/download/${GHALINT_VERSION}/${tarball}"
+          gh release download "$TAG" \
+            --repo "$REPO" \
+            --pattern "$ASSET" \
+            --output asset.tar.gz
           # 正規の release workflow がビルドした成果物であることを検証する
-          # 署名は ghalint の release.yaml から呼ばれる reusable workflow で行われるため、そちらを signer に指定する
-          gh attestation verify "$tarball" \
-            --repo suzuki-shunsuke/ghalint \
-            --signer-workflow suzuki-shunsuke/go-release-workflow/.github/workflows/release.yaml
+          gh attestation verify asset.tar.gz \
+            --repo "$REPO" \
+            --signer-workflow "$SIGNER_WORKFLOW"
           # ピンした時点から中身が変わっていないことを検証する
-          echo "${GHALINT_CHECKSUM}  ${tarball}" | sha256sum -c -
-          tar -xzf "$tarball" ghalint
+          echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
+          tar -xzf asset.tar.gz "$EXECUTABLE"
       # 呼び出し側に設定ファイルを置かずに済むよう、ここで生成する
       - name: Generate ghalint config
         run: |
@@ -88,6 +97,53 @@ jobs:
         env:
           GHALINT_CONFIG: ${{ runner.temp }}/ghalint.yml
         run: ./ghalint run-action
+
+  jactionlint:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install jactionlint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: jdx/jactionlint
+          ASSET: "*_linux_amd64.tar.gz"
+          # renovate: depName=jdx/jactionlint
+          TAG: v2.0.2
+          ASSET_SHA256: 026bce6d0ef196f5b22bf43acb1348d47c5d0a5ae61d6ec3bdba1229a823161b
+          SIGNER_WORKFLOW: jdx/jactionlint/.github/workflows/release.yaml
+          EXECUTABLE: jactionlint
+        run: |
+          gh release download "$TAG" \
+            --repo "$REPO" \
+            --pattern "$ASSET" \
+            --output asset.tar.gz
+          # 正規の release workflow がビルドした成果物であることを検証する
+          gh attestation verify asset.tar.gz \
+            --repo "$REPO" \
+            --signer-workflow "$SIGNER_WORKFLOW"
+          # ピンした時点から中身が変わっていないことを検証する
+          echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
+          tar -xzf asset.tar.gz "$EXECUTABLE"
+      # 呼び出し側に設定ファイルを置かずに済むよう、ここで生成する
+      # concurrency-limits は zizmor の default でも出ない指摘のため off にする
+      - name: Generate jactionlint config
+        run: |
+          cat > "$RUNNER_TEMP/jactionlint.yml" <<'EOF'
+          rules:
+            concurrency-limits: off
+            unpinned-uses:
+              policies:
+                masutaka/actions: ref-pin
+          EOF
+      - name: Run jactionlint
+        env:
+          GITHUB_TOKEN: ${{ github.token }} # --online で使う
+        run: ./jactionlint --color --online --config-file "$RUNNER_TEMP/jactionlint.yml"
 
   zizmor:
     runs-on: ubuntu-latest
