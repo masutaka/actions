@@ -11,6 +11,9 @@ env:
   # renovate: depName=suzuki-shunsuke/ghalint
   GHALINT_VERSION: v1.5.6
   GHALINT_CHECKSUM: 98ee0e3330de7286f470d1e89c03ff7ce70d7a5998ba0f15969c400447be579c
+  # renovate: depName=jdx/jactionlint
+  JACTIONLINT_VERSION: v2.0.2
+  JACTIONLINT_CHECKSUM: 026bce6d0ef196f5b22bf43acb1348d47c5d0a5ae61d6ec3bdba1229a823161b
 
 defaults:
   run:
@@ -88,6 +91,42 @@ jobs:
         env:
           GHALINT_CONFIG: ${{ runner.temp }}/ghalint.yml
         run: ./ghalint run-action
+
+  jactionlint:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install jactionlint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tarball="jactionlint_${JACTIONLINT_VERSION#v}_linux_amd64.tar.gz"
+          curl -fsSL -O "https://github.com/jdx/jactionlint/releases/download/${JACTIONLINT_VERSION}/${tarball}"
+          # 正規の release workflow がビルドした成果物であることを検証する
+          gh attestation verify "$tarball" \
+            --repo jdx/jactionlint \
+            --signer-workflow jdx/jactionlint/.github/workflows/release.yaml
+          # ピンした時点から中身が変わっていないことを検証する
+          echo "${JACTIONLINT_CHECKSUM}  ${tarball}" | sha256sum -c -
+          tar -xzf "$tarball" jactionlint
+      # 呼び出し側に設定ファイルを置かずに済むよう、ここで生成する
+      # concurrency-limits は zizmor の default でも出ない指摘のため off にする
+      - name: Generate jactionlint config
+        run: |
+          cat > "$RUNNER_TEMP/jactionlint.yml" <<'EOF'
+          rules:
+            concurrency-limits: off
+            unpinned-uses:
+              policies:
+                masutaka/actions: ref-pin
+          EOF
+      - name: Run jactionlint
+        run: ./jactionlint --color --config-file "$RUNNER_TEMP/jactionlint.yml"
 
   zizmor:
     runs-on: ubuntu-latest
