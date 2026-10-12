@@ -32,10 +32,11 @@ jobs:
             --repo "$REPO" \
             --pattern "$ASSET" \
             --output asset.tar.gz
-          # 正規の release workflow がビルドした成果物であることを検証する
+          # 正規の release workflow がそのタグからビルドした成果物であることを検証する
           gh attestation verify asset.tar.gz \
             --repo "$REPO" \
-            --signer-workflow "$SIGNER_WORKFLOW"
+            --signer-workflow "$SIGNER_WORKFLOW" \
+            --source-ref "refs/tags/$TAG"
           # ピンした時点から中身が変わっていないことを検証する
           echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
           tar -xzf asset.tar.gz "$EXECUTABLE"
@@ -74,10 +75,11 @@ jobs:
             --repo "$REPO" \
             --pattern "$ASSET" \
             --output asset.tar.gz
-          # 正規の release workflow がビルドした成果物であることを検証する
+          # 正規の release workflow がそのタグからビルドした成果物であることを検証する
           gh attestation verify asset.tar.gz \
             --repo "$REPO" \
-            --signer-workflow "$SIGNER_WORKFLOW"
+            --signer-workflow "$SIGNER_WORKFLOW" \
+            --source-ref "refs/tags/$TAG"
           # ピンした時点から中身が変わっていないことを検証する
           echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
           tar -xzf asset.tar.gz "$EXECUTABLE"
@@ -122,10 +124,11 @@ jobs:
             --repo "$REPO" \
             --pattern "$ASSET" \
             --output asset.tar.gz
-          # 正規の release workflow がビルドした成果物であることを検証する
+          # 正規の release workflow がそのタグからビルドした成果物であることを検証する
           gh attestation verify asset.tar.gz \
             --repo "$REPO" \
-            --signer-workflow "$SIGNER_WORKFLOW"
+            --signer-workflow "$SIGNER_WORKFLOW" \
+            --source-ref "refs/tags/$TAG"
           # ピンした時点から中身が変わっていないことを検証する
           echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
           tar -xzf asset.tar.gz "$EXECUTABLE"
