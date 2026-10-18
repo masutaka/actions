@@ -1,0 +1,24 @@
+name: Review deps PR
+
+on:
+  pull_request:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: レビューする Renovate の PR 番号
+        required: true
+        type: number
+
+jobs:
+  review_deps_pr:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.user.login == 'renovate[bot]'
+    # federation rule が job_workflow_ref を main に限定しているので、$/ ではなく @main で呼ぶ
+    uses: masutaka/actions/.github/workflows/review_deps_pr.yml@main
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      security-events: read
+    with:
+      pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
