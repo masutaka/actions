@@ -17,6 +17,7 @@
 - [dependency_review.yml](./.github/workflows/dependency_review.yml) ([docs](./docs/dependency_review.md)) - PR の依存関係をレビューする
 - [gh_action_lint.yml](./.github/workflows/gh_action_lint.yml) ([docs](./docs/gh_action_lint.md)) - GitHub Actions のワークフローを actionlint, ghalint, zizmor で検査する
 - [pushover.yml](./.github/workflows/pushover.yml) ([docs](./docs/pushover.md)) - Pushover 通知を送信する
+- [review_deps_pr.yml](./.github/workflows/review_deps_pr.yml) ([docs](./docs/review_deps_pr.md)) - Dependabot / Renovate の PR を Claude でレビューし、PR にコメントする
 
 ## 関連
 
