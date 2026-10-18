@@ -74,6 +74,7 @@ jobs:
           echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
 
       - name: Review PR
+        id: claude
         uses: anthropics/claude-code-action@1d6de8cb0c237e7c15e9e1bdf973826ebae490cc # v1.0.248
         env:
           GH_TOKEN: ${{ github.token }}
@@ -88,6 +89,13 @@ jobs:
           prompt: /my-review-deps-pr https://github.com/${{ github.repository }}/pull/${{ steps.pr.outputs.number }}
           claude_args: >-
             --allowedTools "Bash(ghro pr view:*),Bash(ghro pr diff:*),Bash(ghro api:*),Bash(gh pr checks:*),Read,Write"
+
+      # claude-code-action は出力を隠すので、失敗したときは結果の本文だけを出す
+      - name: Show Claude error
+        if: failure()
+        env:
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file || format('{0}/claude-execution-output.json', runner.temp) }}
+        run: jq -r '.. | objects | select(.type? == "result") | .result // empty' "${EXECUTION_FILE}"
 
       - name: Upload review
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
