@@ -47,7 +47,6 @@ jobs:
       contents: read
       id-token: write
       pull-requests: write
-      security-events: read
     with:
       pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
 ```
@@ -75,7 +74,6 @@ jobs:
       contents: read
       id-token: write
       pull-requests: write
-      security-events: read
     with:
       pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
 ```
