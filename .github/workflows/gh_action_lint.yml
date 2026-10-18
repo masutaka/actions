@@ -115,8 +115,8 @@ jobs:
           REPO: jdx/jactionlint
           ASSET: "*_linux_amd64.tar.gz"
           # renovate: depName=jdx/jactionlint
-          TAG: v2.0.2
-          ASSET_SHA256: 026bce6d0ef196f5b22bf43acb1348d47c5d0a5ae61d6ec3bdba1229a823161b
+          TAG: v2.1.0
+          ASSET_SHA256: baebfc5792135438fb3bb5ea266c3bf2538a089753616f1988ef618e4c0c3cb1
           SIGNER_WORKFLOW: jdx/jactionlint/.github/workflows/release.yaml
           EXECUTABLE: jactionlint
         run: |
