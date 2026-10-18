@@ -21,3 +21,5 @@ jobs:
       pull-requests: write
     with:
       pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
+    secrets:
+      DEPENDABOT_ALERTS_APP_PRIVATE_KEY: ${{ secrets.DEPENDABOT_ALERTS_APP_PRIVATE_KEY }}

@@ -9,6 +9,7 @@
 ## 仕組み
 
 - `review` job で Claude がレビューし、結果を artifact に保存する。Claude に渡す `GITHUB_TOKEN` は read-only
+- `GITHUB_TOKEN` では Dependabot alert を参照できないので、Claude を動かす前に GitHub App のトークンで open な alert を取得し、ファイルで渡す。App のトークンは Claude に渡さない
 - `comment` job が artifact を PR にコメントする。この job では Claude を動かさない
 - Claude に許可するツールは `ghro`（`gh` へのシンボリックリンク）・`gh pr checks`・`Read`・`Write` に限る
 
@@ -16,11 +17,28 @@
 
 Claude Console の federation rule は、`job_workflow_ref` をこの reusable workflow の main に限定している。そのため、呼び出し側は `@main` で参照すること。
 
+GitHub App `masutaka-dependabot-alerts-reader`（Repository permissions: Dependabot alerts の Read-only だけ）を、呼び出し側のリポジトリにインストールする。
+
+`https://github.com/settings/installations`
+
+App の private key を、呼び出し側のリポジトリの secret `DEPENDABOT_ALERTS_APP_PRIVATE_KEY` に登録する。Dependabot がトリガーした実行は Dependabot secrets しか参照できないので、Dependabot を使うリポジトリは Actions secrets と Dependabot secrets の両方に登録する。
+
+```sh
+gh secret set DEPENDABOT_ALERTS_APP_PRIVATE_KEY --repo masutaka/<repo> < private-key.pem
+gh secret set DEPENDABOT_ALERTS_APP_PRIVATE_KEY --repo masutaka/<repo> --app dependabot < private-key.pem
+```
+
 ## Inputs
 
 | 名前 | 必須 | デフォルト | 説明 |
 | --- | --- | --- | --- |
 | `pr-number` | Yes | - | レビューする Dependabot / Renovate の PR 番号 |
+
+## Secrets
+
+| 名前 | 必須 | 説明 |
+| --- | --- | --- |
+| `DEPENDABOT_ALERTS_APP_PRIVATE_KEY` | Yes | Dependabot alert を参照する GitHub App の private key |
 
 ## 使用例
 
@@ -49,6 +67,8 @@ jobs:
       pull-requests: write
     with:
       pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
+    secrets:
+      DEPENDABOT_ALERTS_APP_PRIVATE_KEY: ${{ secrets.DEPENDABOT_ALERTS_APP_PRIVATE_KEY }}
 ```
 
 ### Renovate を使うリポジトリ
@@ -76,6 +96,8 @@ jobs:
       pull-requests: write
     with:
       pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
+    secrets:
+      DEPENDABOT_ALERTS_APP_PRIVATE_KEY: ${{ secrets.DEPENDABOT_ALERTS_APP_PRIVATE_KEY }}
 ```
 
 ## 関連
