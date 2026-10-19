@@ -8,8 +8,8 @@ on:
         required: true
         type: string
     secrets:
-      DEPENDABOT_ALERTS_APP_PRIVATE_KEY:
-        description: Dependabot alert を参照する GitHub App の private key
+      REVIEW_DEPS_PR_APP_PRIVATE_KEY:
+        description: review_deps_pr 用の GitHub App の private key
         required: true
 
 defaults:
@@ -54,26 +54,19 @@ jobs:
           ref: ${{ github.event.repository.default_branch }} # PR のコードを取り出さない
           persist-credentials: false
 
-      # GITHUB_TOKEN では Dependabot alert を参照できないので、GitHub App のトークンで取得しておく。
-      # 最小権限の原則に従い、このトークンは Claude に渡さないこと
+      # GITHUB_TOKEN では Dependabot alert を参照できないので、Claude には GitHub App のトークンを渡す
       - name: Create GitHub App token
         id: app-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: Iv23liLTmtkfA2p609M7
-          private-key: ${{ secrets.DEPENDABOT_ALERTS_APP_PRIVATE_KEY }}
+          private-key: ${{ secrets.REVIEW_DEPS_PR_APP_PRIVATE_KEY }}
           repositories: ${{ github.event.repository.name }}
+          permission-checks: read
+          permission-contents: read
+          permission-pull-requests: read
+          permission-statuses: read
           permission-vulnerability-alerts: read
-
-      - name: Fetch Dependabot alerts
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          mkdir -p tmp
-          gh api "repos/${GH_REPO}/dependabot/alerts?state=open&per_page=100" --paginate --slurp \
-            | jq 'add // []' > tmp/dependabot-alerts.json
-          echo "open な Dependabot alert: $(jq length tmp/dependabot-alerts.json) 件"
 
       # claude-code-action は作業ディレクトリの .claude/ を PR のベースブランチの内容に戻すので、
       # スキルはユーザーレベルの ~/.claude/skills/ に置く
@@ -88,7 +81,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       # スキルは ghro（read-only の gh）を使う前提なので、gh へのシンボリックリンクとして ghro を置く。
-      # GH_TOKEN には read-only の GITHUB_TOKEN を渡す
+      # claude-code-action が GH_TOKEN を github_token の値（read-only の App のトークン）で上書きする
       - name: Set up skill and ghro
         run: |
           mkdir -p ~/.claude/skills ~/.local/bin
@@ -101,19 +94,18 @@ jobs:
         id: claude
         uses: anthropics/claude-code-action@1d6de8cb0c237e7c15e9e1bdf973826ebae490cc # v1.0.248
         env:
-          GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         with:
           # 共通の federation rule。job_workflow_ref でこの reusable workflow の main に限定している
           anthropic_federation_rule_id: ${{ github.event_name == 'workflow_dispatch' && 'fdrl_01GD7sDFaX6dNJ2giR523H6C' || 'fdrl_01MZdbfy54rQ8hntGCGwtsxa' }}
           anthropic_organization_id: d170801b-83d8-4eda-88e6-bc31733e7266
           anthropic_service_account_id: svac_01Hv2ida4TpQJuoWG9HAaTEC
-          github_token: ${{ github.token }}
+          github_token: ${{ steps.app-token.outputs.token }}
           allowed_bots: dependabot[bot],renovate[bot]
           prompt: /my-review-deps-pr https://github.com/${{ github.repository }}/pull/${{ steps.pr.outputs.number }}
           claude_args: >-
             --allowedTools "Bash(ghro pr view:*),Bash(ghro pr diff:*),Bash(ghro api:*),Bash(ghro pr checks:*),Bash(gh pr checks:*),Read,Write"
-            --append-system-prompt "Dependabot alert の一覧は tmp/dependabot-alerts.json に取得済み（state=open の全件で、API のレスポンスそのもの）。alert API は権限がなく呼べないので、このファイルを Read で読むこと。許可されたコマンドしか実行できないので、cd や ; や && でつながず、コマンドは 1 つずつ実行すること。"
+            --append-system-prompt "許可されたコマンドしか実行できないので、cd や ; や && でつながず、コマンドは 1 つずつ実行すること。"
 
       # claude-code-action は出力を隠すので、拒否されたツールと、失敗したときは結果の本文だけを出す
       - name: Show Claude result
