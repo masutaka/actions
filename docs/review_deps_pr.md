@@ -17,15 +17,15 @@
 
 Claude Console の federation rule は、`job_workflow_ref` をこの reusable workflow の main に限定している。そのため、呼び出し側は `@main` で参照すること。
 
-GitHub App `masutaka-dependabot-alerts-reader`（Repository permissions: Checks・Commit statuses・Contents・Dependabot alerts・Pull requests の Read-only）を、呼び出し側のリポジトリにインストールする。
+GitHub App `masutaka-review-deps-pr`（Repository permissions: Checks・Commit statuses・Contents・Dependabot alerts・Pull requests の Read-only）を、呼び出し側のリポジトリにインストールする。
 
 `https://github.com/settings/installations`
 
-App の private key を、呼び出し側のリポジトリの secret `DEPENDABOT_ALERTS_APP_PRIVATE_KEY` に登録する。Dependabot がトリガーした実行は Dependabot secrets しか参照できないので、Dependabot を使うリポジトリは Actions secrets と Dependabot secrets の両方に登録する。
+App の private key を、呼び出し側のリポジトリの secret `REVIEW_DEPS_PR_APP_PRIVATE_KEY` に登録する。Dependabot がトリガーした実行は Dependabot secrets しか参照できないので、Dependabot を使うリポジトリは Actions secrets と Dependabot secrets の両方に登録する。
 
 ```sh
-gh secret set DEPENDABOT_ALERTS_APP_PRIVATE_KEY --repo masutaka/<repo> < private-key.pem
-gh secret set DEPENDABOT_ALERTS_APP_PRIVATE_KEY --repo masutaka/<repo> --app dependabot < private-key.pem
+gh secret set REVIEW_DEPS_PR_APP_PRIVATE_KEY --repo masutaka/<repo> < private-key.pem
+gh secret set REVIEW_DEPS_PR_APP_PRIVATE_KEY --repo masutaka/<repo> --app dependabot < private-key.pem
 ```
 
 ## Inputs
@@ -38,7 +38,7 @@ gh secret set DEPENDABOT_ALERTS_APP_PRIVATE_KEY --repo masutaka/<repo> --app dep
 
 | 名前 | 必須 | 説明 |
 | --- | --- | --- |
-| `DEPENDABOT_ALERTS_APP_PRIVATE_KEY` | Yes | Dependabot alert を参照する GitHub App の private key |
+| `REVIEW_DEPS_PR_APP_PRIVATE_KEY` | Yes | GitHub App `masutaka-review-deps-pr` の private key |
 
 ## 使用例
 
@@ -68,7 +68,7 @@ jobs:
     with:
       pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
     secrets:
-      DEPENDABOT_ALERTS_APP_PRIVATE_KEY: ${{ secrets.DEPENDABOT_ALERTS_APP_PRIVATE_KEY }}
+      REVIEW_DEPS_PR_APP_PRIVATE_KEY: ${{ secrets.REVIEW_DEPS_PR_APP_PRIVATE_KEY }}
 ```
 
 ### Renovate を使うリポジトリ
@@ -97,7 +97,7 @@ jobs:
     with:
       pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
     secrets:
-      DEPENDABOT_ALERTS_APP_PRIVATE_KEY: ${{ secrets.DEPENDABOT_ALERTS_APP_PRIVATE_KEY }}
+      REVIEW_DEPS_PR_APP_PRIVATE_KEY: ${{ secrets.REVIEW_DEPS_PR_APP_PRIVATE_KEY }}
 ```
 
 ## 関連

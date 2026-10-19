@@ -8,8 +8,8 @@ on:
         required: true
         type: string
     secrets:
-      DEPENDABOT_ALERTS_APP_PRIVATE_KEY:
-        description: Dependabot alert を参照する GitHub App の private key
+      REVIEW_DEPS_PR_APP_PRIVATE_KEY:
+        description: review_deps_pr 用の GitHub App の private key
         required: true
 
 defaults:
@@ -60,7 +60,7 @@ jobs:
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: Iv23liLTmtkfA2p609M7
-          private-key: ${{ secrets.DEPENDABOT_ALERTS_APP_PRIVATE_KEY }}
+          private-key: ${{ secrets.REVIEW_DEPS_PR_APP_PRIVATE_KEY }}
           repositories: ${{ github.event.repository.name }}
           permission-checks: read
           permission-contents: read
