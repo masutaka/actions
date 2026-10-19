@@ -7,6 +7,11 @@ on:
         description: レビューする Dependabot / Renovate の PR 番号
         required: true
         type: string
+      language:
+        description: レビューを書く言語（ja または en）
+        required: false
+        type: string
+        default: ja
     secrets:
       REVIEW_DEPS_PR_APP_PRIVATE_KEY:
         description: review_deps_pr 用の GitHub App の private key
@@ -33,11 +38,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ inputs.pr-number }}
+          LANGUAGE: ${{ inputs.language }}
         run: |
           if ! [[ "${PR_NUMBER}" =~ ^[0-9]+$ ]]; then
             echo "::error::Invalid PR number: ${PR_NUMBER}"
             exit 1
           fi
+          case "${LANGUAGE}" in
+            ja|en) ;;
+            *)
+              echo "::error::Invalid language: ${LANGUAGE}"
+              exit 1
+              ;;
+          esac
           author=$(gh pr view "${PR_NUMBER}" --json author --jq .author.login)
           case "${author}" in
             app/dependabot|app/renovate) ;;
@@ -105,7 +118,7 @@ jobs:
           prompt: /my-review-deps-pr https://github.com/${{ github.repository }}/pull/${{ steps.pr.outputs.number }}
           claude_args: >-
             --allowedTools "Bash(ghro pr view:*),Bash(ghro pr diff:*),Bash(ghro api:*),Bash(ghro pr checks:*),Bash(gh pr checks:*),Read,Write"
-            --append-system-prompt "許可されたコマンドしか実行できないので、cd や ; や && でつながず、コマンドは 1 つずつ実行すること。"
+            --append-system-prompt "許可されたコマンドしか実行できないので、cd や ; や && でつながず、コマンドは 1 つずつ実行すること。${{ inputs.language == 'en' && 'レビューは英語で書くこと。テンプレートの見出しも英語にすること。' || '' }}"
 
       # claude-code-action は出力を隠すので、拒否されたツールと、失敗したときは結果の本文だけを出す
       - name: Show Claude result

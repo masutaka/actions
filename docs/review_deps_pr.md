@@ -33,6 +33,7 @@ gh secret set REVIEW_DEPS_PR_APP_PRIVATE_KEY --repo masutaka/<repo> --app depend
 | 名前 | 必須 | デフォルト | 説明 |
 | --- | --- | --- | --- |
 | `pr-number` | Yes | - | レビューする Dependabot / Renovate の PR 番号 |
+| `language` | No | `ja` | レビューを書く言語。`ja` か `en` |
 
 ## Secrets
 
