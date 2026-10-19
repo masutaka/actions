@@ -113,7 +113,7 @@ jobs:
           prompt: /my-review-deps-pr https://github.com/${{ github.repository }}/pull/${{ steps.pr.outputs.number }}
           claude_args: >-
             --allowedTools "Bash(ghro pr view:*),Bash(ghro pr diff:*),Bash(ghro api:*),Bash(gh pr checks:*),Read,Write"
-            --append-system-prompt "Dependabot alert の一覧は tmp/dependabot-alerts.json に取得済み（state=open の全件で、API のレスポンスそのもの）。alert API は権限がなく呼べないので、このファイルを使うこと。"
+            --append-system-prompt "Dependabot alert の一覧は tmp/dependabot-alerts.json に取得済み（state=open の全件で、API のレスポンスそのもの）。alert API は権限がなく呼べないので、このファイルを Read で読むこと。許可されたコマンドしか実行できないので、cd や ; や && でつながず、コマンドは 1 つずつ実行すること。"
 
       # claude-code-action は出力を隠すので、拒否されたツールと、失敗したときは結果の本文だけを出す
       - name: Show Claude result
