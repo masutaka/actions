@@ -8,8 +8,8 @@
 
 ## 仕組み
 
-- `review` job で Claude がレビューし、結果を artifact に保存する。Claude に渡す `GITHUB_TOKEN` は read-only
-- `GITHUB_TOKEN` では Dependabot alert を参照できないので、Claude を動かす前に GitHub App のトークンで open な alert を取得し、ファイルで渡す。App のトークンは Claude に渡さない
+- `review` job で Claude がレビューし、結果を artifact に保存する
+- `GITHUB_TOKEN` では Dependabot alert を参照できないので、Claude には GitHub App のトークンを渡す。権限はそのリポジトリの読み取りだけ
 - `comment` job が artifact を PR にコメントする。この job では Claude を動かさない
 - Claude に許可するツールは `ghro`（`gh` へのシンボリックリンク）・`gh pr checks`・`Read`・`Write` に限る
 
@@ -17,7 +17,7 @@
 
 Claude Console の federation rule は、`job_workflow_ref` をこの reusable workflow の main に限定している。そのため、呼び出し側は `@main` で参照すること。
 
-GitHub App `masutaka-dependabot-alerts-reader`（Repository permissions: Dependabot alerts の Read-only だけ）を、呼び出し側のリポジトリにインストールする。
+GitHub App `masutaka-dependabot-alerts-reader`（Repository permissions: Checks・Commit statuses・Contents・Dependabot alerts・Pull requests の Read-only）を、呼び出し側のリポジトリにインストールする。
 
 `https://github.com/settings/installations`
 
