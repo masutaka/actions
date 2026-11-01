@@ -149,7 +149,7 @@ jobs:
         run: ./jactionlint --color --online --config-file "$RUNNER_TEMP/jactionlint.yml"
 
   zizmor:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
       contents: read
@@ -158,10 +158,9 @@ jobs:
         with:
           persist-credentials: false
       # 呼び出し側に設定ファイルを置かずに済むよう、ここで生成する
-      # zizmor-action は GITHUB_WORKSPACE だけを Docker にマウントするため、RUNNER_TEMP ではなくワークスペース内に置く
       - name: Generate zizmor config
         run: |
-          cat > .masutaka-actions-zizmor.yml <<'EOF'
+          cat > "$RUNNER_TEMP/zizmor.yml" <<'EOF'
           rules:
             unpinned-uses:
               config:
@@ -173,4 +172,4 @@ jobs:
         with:
           advanced-security: false # true にすると SARIF 出力になり、findings があっても exit 0 で CI が落ちないため
           annotations: true
-          config: .masutaka-actions-zizmor.yml
+          config: ${{ runner.temp }}/zizmor.yml
