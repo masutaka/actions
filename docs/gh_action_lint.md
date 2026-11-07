@@ -1,6 +1,6 @@
 # gh_action_lint
 
-`gh_action_lint` reusable workflow [`.github/workflows/gh_action_lint.yml`](../.github/workflows/gh_action_lint.yml) は、GitHub Actions まわりの設定ファイルを 4 つの linter で検査する。
+`gh_action_lint` reusable workflow [`.github/workflows/gh_action_lint.yml`](../.github/workflows/gh_action_lint.yml) は、GitHub Actions まわりの設定ファイルを 3 つの linter で検査する。
 
 linter ごとにジョブを分けてあるので、1 つが失敗しても残りの結果は得られる。
 
@@ -8,7 +8,6 @@ linter ごとにジョブを分けてあるので、1 つが失敗しても残�
 
 | linter | 何を見るか | 検査対象 |
 | --- | --- | --- |
-| [actionlint](https://github.com/rhysd/actionlint) | 構文や式、`run` のシェルスクリプトの誤り | ワークフロー |
 | [ghalint](https://github.com/suzuki-shunsuke/ghalint) | `permissions` や secret の扱いといったセキュリティポリシーへの準拠 | ワークフロー、action 定義 |
 | [jactionlint](https://github.com/jdx/jactionlint) | actionlint の検査に加え、zizmor 相当のセキュリティ・ポリシー検査 | ワークフロー、action 定義、Dependabot 設定 |
 | [zizmor](https://github.com/zizmorcore/zizmor) | テンプレート展開によるコード注入や pin の不備 | ワークフロー、action 定義、Dependabot 設定、pre-commit 設定 |
@@ -19,18 +18,6 @@ linter ごとにジョブを分けてあるので、1 つが失敗しても残�
 
 ghalint だけはコマンドが分かれていて、`ghalint run` がワークフローを、`ghalint run-action` が action 定義を検査する。後者はリポジトリルート直下だけでなく、`.github/actions/foo/action.yml` のようにサブディレクトリへ切り出した composite action も対象になる。
 
-### actionlint で無視しているエラー
-
-actionlint v1.7.12 が未対応の構文について、以下のエラーを無視している。actionlint が対応したら外す。
-
-| 未対応の構文 | 無視しているエラー |
-| --- | --- |
-| `concurrency` の `queue` キー | `unexpected key "queue" for "concurrency" section` |
-| self-repository 構文 (`$/...`) の action | `specifying action "$/...` |
-| self-repository 構文 (`$/...`) の reusable workflow 呼び出し | `reusable workflow call "$/...` |
-
-self-repository 構文への対応は [rhysd/actionlint#711](https://github.com/rhysd/actionlint/issues/711) で追跡できる。
-
 ### ghalint、jactionlint、zizmor の設定
 
 呼び出し側は `masutaka/actions` の reusable workflow を `@main` で呼ぶ想定なので、SHA pin を求める指摘を各 linter で無効にしている。
@@ -39,13 +26,20 @@ self-repository 構文への対応は [rhysd/actionlint#711](https://github.com/
 - jactionlint: `unpinned-uses` で `masutaka/actions` を `ref-pin` にする
 - zizmor: `unpinned-uses` で `masutaka/actions/*` を `ref-pin` にする
 
-jactionlint はさらに `concurrency-limits` を off にしている。トップレベルに `concurrency:` が無いワークフローを指摘するルールで、zizmor の default でも出ない指摘のため。
+jactionlint はさらに次の 2 つを設定している。
+
+- `concurrency-limits` を off にする。トップレベルに `concurrency:` が無いワークフローを指摘するルールだが、すべてのワークフローに求めるのは過剰なため。zizmor の default でも指摘しない
+- `template-injection` を `pedantic: true` にする。攻撃者が操作できる値かどうかに関係なく、`run:` には式を直接展開せず env 経由で渡すため。`github.actor`・`vars.*`・step output に加え、`matrix.*` や `github.event.pull_request.number` も指摘する。zizmor の `regular` persona より厳しい
 
 設定ファイルはジョブ内で生成して linter に渡すので、呼び出し側に `.github/ghalint.yml`、`.github/jactionlint.yaml`、`.github/zizmor.yml` を置く必要はない。置いても読まれない。
 
-### jactionlint を追加した理由
+### actionlint ではなく jactionlint を使う理由
 
-jactionlint は actionlint の fork で、zizmor の検査の多くもカバーする。将来は actionlint と zizmor を置き換える予定で、それまでは併用して様子を見る。
+jactionlint は actionlint の fork で、`correctness` profile が actionlint のチェックをカバーする（[Coming from actionlint](https://jactionlint.jdx.dev/actionlint)）。使っている `default` profile は `correctness` のチェックを含む。actionlint が未対応の `concurrency` の `queue` キーや self-repository 構文 (`$/...`) も、エラーにならない。
+
+### jactionlint と zizmor を併用している理由
+
+jactionlint は zizmor のチェックの多くもカバーする（[jactionlint and zizmor](https://jactionlint.jdx.dev/zizmor-parity)）。それでも本家の zizmor も動かしているのは、jactionlint の判定が zizmor と食い違ったときに気づけるため。
 
 ### ghalint と zizmor を併用している理由
 
@@ -82,7 +76,6 @@ jobs:
 
 ## 関連
 
-- https://github.com/rhysd/actionlint
 - https://github.com/suzuki-shunsuke/ghalint
 - https://github.com/jdx/jactionlint
 - https://github.com/zizmorcore/zizmor

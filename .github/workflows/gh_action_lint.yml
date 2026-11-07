@@ -8,48 +8,6 @@ defaults:
     shell: bash
 
 jobs:
-  actionlint:
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Install actionlint
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: rhysd/actionlint
-          ASSET: "*_linux_amd64.tar.gz"
-          # renovate: depName=rhysd/actionlint
-          TAG: v1.7.12
-          ASSET_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
-          SIGNER_WORKFLOW: rhysd/actionlint/.github/workflows/release.yaml
-          EXECUTABLE: actionlint
-        run: |
-          gh release download "$TAG" \
-            --repo "$REPO" \
-            --pattern "$ASSET" \
-            --output asset.tar.gz
-          # 正規の release workflow がそのタグからビルドした成果物であることを検証する
-          gh attestation verify asset.tar.gz \
-            --repo "$REPO" \
-            --signer-workflow "$SIGNER_WORKFLOW" \
-            --source-ref "refs/tags/$TAG"
-          # ピンした時点から中身が変わっていないことを検証する
-          echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
-          tar -xzf asset.tar.gz "$EXECUTABLE"
-      - name: Run actionlint
-        # actionlint v1.7.12 は以下に未対応のため、そのエラーだけ無視する
-        # - concurrency の queue
-        # - self-repository 構文 ($/...) の action と reusable workflow 呼び出し https://github.com/rhysd/actionlint/issues/711
-        run: |
-          ./actionlint -color \
-            -ignore 'unexpected key "queue" for "concurrency" section' \
-            -ignore 'specifying action "\$/' \
-            -ignore 'reusable workflow call "\$/'
-
   ghalint:
     runs-on: ubuntu-slim
     timeout-minutes: 5
@@ -133,12 +91,15 @@ jobs:
           echo "${ASSET_SHA256}  asset.tar.gz" | sha256sum -c -
           tar -xzf asset.tar.gz "$EXECUTABLE"
       # 呼び出し側に設定ファイルを置かずに済むよう、ここで生成する
-      # concurrency-limits は zizmor の default でも出ない指摘のため off にする
       - name: Generate jactionlint config
         run: |
           cat > "$RUNNER_TEMP/jactionlint.yml" <<'EOF'
           rules:
+            # すべてのワークフローに concurrency を求めるのは過剰なため off にする（zizmor の default でも指摘しない）
             concurrency-limits: off
+            # 攻撃者が操作できる値かどうかに関係なく、run: には式を直接展開せず env 経由で渡させるため pedantic にする（zizmor の regular persona より厳しい）
+            template-injection:
+              pedantic: true
             unpinned-uses:
               policies:
                 masutaka/actions: ref-pin
