@@ -105,7 +105,7 @@ jobs:
 
       - name: Review PR
         id: claude
-        uses: anthropics/claude-code-action@v1.0.262
+        uses: anthropics/claude-code-action@v1.0.267
         env:
           GH_REPO: ${{ github.repository }}
         with:
