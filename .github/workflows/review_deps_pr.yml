@@ -120,7 +120,7 @@ jobs:
             --allowedTools "Bash(ghro pr view:*),Bash(ghro pr diff:*),Bash(ghro api:*),Bash(ghro pr checks:*),Bash(gh pr checks:*),Read,Write"
             --append-system-prompt "許可されたコマンドしか実行できないので、cd や ; や && でつながず、コマンドは 1 つずつ実行すること。${{ inputs.language == 'en' && 'レビューは英語で書くこと。テンプレートの見出しも英語にすること。' || '' }}"
 
-      # claude-code-action は出力を隠すので、拒否されたツールと、失敗したときは結果の本文だけを出す
+      # claude-code-action は出力を隠すので、コストとターン数、拒否されたツール、失敗したときは結果の本文だけを出す
       - name: Show Claude result
         if: always() && steps.claude.outcome != 'skipped'
         env:
@@ -128,6 +128,8 @@ jobs:
           CLAUDE_OUTCOME: ${{ steps.claude.outcome }}
         run: |
           result=$(jq -c '[.. | objects | select(.type? == "result")] | last' "${EXECUTION_FILE}")
+          jq -r '"cost: \(.total_cost_usd) USD, turns: \(.num_turns)"' <<< "${result}"
+          jq -r '.modelUsage // {} | to_entries[] | "usage: \(.key) \(.value | tostring)"' <<< "${result}"
           jq -r '.permission_denials[]? | "denied: \(.tool_name) \(.tool_input | tostring | .[0:300])"' <<< "${result}"
           if [[ "${CLAUDE_OUTCOME}" == failure ]]; then
             jq -r '.result // empty' <<< "${result}"
